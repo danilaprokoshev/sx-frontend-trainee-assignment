@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Accordion, Button, Spinner } from 'react-bootstrap';
 import {Link, Redirect} from 'react-router-dom';
@@ -10,25 +10,30 @@ const DELAY = 60000;
 const StoryPage = () => {
   const dispatch = useDispatch();
   const currentStoryId = useSelector((state) => state.storiesInfo.currentStoryId);
-  const StoriesAllIds = useSelector((state) => state.storiesInfo.allIds);
+  const storiesAllIds = useSelector((state) => state.storiesInfo.allIds);
   const storiesById = useSelector((state) => state.storiesInfo.byId);
   const commentsById = useSelector((state) => state.commentsInfo.byId);
   const loading = useSelector((state) => state.commentsInfo.loading);
 
   const fetchComments = () => {
-    const commentsIds = StoriesAllIds
+    const commentsIds = storiesAllIds
       .filter((id) => storiesById[id].descendants > 0)
       .flatMap((id) => storiesById[id].kids);
     dispatch(fetchCommentsByIds(commentsIds));
   };
 
+  const memoizedFetchComments = useCallback(
+    fetchComments,
+    [storiesById, dispatch, storiesAllIds]
+  );
+
   useEffect(() => {
-    const id = setInterval(fetchComments, DELAY);
+    const id = setInterval(memoizedFetchComments, DELAY);
 
     return () => {
       clearInterval(id);
     };
-  }, [StoriesAllIds]);
+  }, [memoizedFetchComments]);
 
   const getCommentsCount = (byId, id) => byId[id].descendants;
 

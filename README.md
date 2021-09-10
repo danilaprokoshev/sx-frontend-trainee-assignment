@@ -1,6 +1,6 @@
 # Test assignment for frontend trainee position (Seller Experience Avito team)
 
-### This project is as test assignment for frontend trainee position. It represents an interface of [**Hacker News**](https://news.ycombinator.com/news) containing two pages.
+#### This project is as test assignment for frontend trainee position. It represents an interface of [**Hacker News**](https://news.ycombinator.com/news) containing two pages.
 
 ## Getting Started
 

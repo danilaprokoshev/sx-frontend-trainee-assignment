@@ -47,14 +47,27 @@ const HomePage = () => {
     };
   }, [memoizedFetchContent]);
 
-  useEffect(() => {
+  const fetchComments = () => {
     const commentsIds = storiesAllIds
       .filter((id) => storiesById[id].descendants > 0)
       .flatMap((id) => storiesById[id].kids);
     dispatch(fetchCommentsByIds(commentsIds));
+  };
+
+  const memoizedFetchComments = useCallback(
+    fetchComments,
+    [storiesById, dispatch, storiesAllIds]
+  );
+
+  useEffect(() => {
+    memoizedFetchComments();
+    // const commentsIds = storiesAllIds
+    //   .filter((id) => storiesById[id].descendants > 0)
+    //   .flatMap((id) => storiesById[id].kids);
+    // dispatch(fetchCommentsByIds(commentsIds));
 
     return () => {};
-  }, [storiesById]);
+  }, [memoizedFetchComments]);
 
   const handleSelectStory = (id) => () => {
     dispatch(setCurrentStoryId(id));

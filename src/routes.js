@@ -6,7 +6,9 @@ const proxyUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?disableCa
 const newStoriesURL = () => [host, prefix, 'newstories.json'].join('/'); // TODO: refactor query params
 const itemURL = (id) => [host, prefix, 'item', `${id}.json`].join('/');
 
-export default {
+const routes = {
   newStoriesPath: () => proxyUrl(newStoriesURL()),
   itemPath: (id) => proxyUrl(itemURL(id)),
 };
+
+export default routes;
