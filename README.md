@@ -1,4 +1,5 @@
 ## Test assignment for frontend trainee position (Seller Experience Avito team)
+[![Actions Status](https://github.com/danilaprokoshev/fsx-frontend-trainee-assignment/workflows/CI/badge.svg)](https://github.com/danilaprokoshev/sx-frontend-trainee-assignment/actions)
 
 This project is as **test assignment** for frontend trainee position. It represents an interface of [**Hacker News**](https://news.ycombinator.com/news) containing two pages.
 
