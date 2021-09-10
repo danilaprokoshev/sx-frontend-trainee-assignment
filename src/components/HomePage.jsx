@@ -61,10 +61,6 @@ const HomePage = () => {
 
   useEffect(() => {
     memoizedFetchComments();
-    // const commentsIds = storiesAllIds
-    //   .filter((id) => storiesById[id].descendants > 0)
-    //   .flatMap((id) => storiesById[id].kids);
-    // dispatch(fetchCommentsByIds(commentsIds));
 
     return () => {};
   }, [memoizedFetchComments]);
