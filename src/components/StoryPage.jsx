@@ -98,8 +98,6 @@ const StoryPage = () => {
                 <h5 className="card-title">{storiesById[currentStoryId].title}</h5>
                 <small>by {storiesById[currentStoryId].by}</small>
                 <p> </p>
-                <p className="card-text">Comments: <span className="badge text-dark bg-light rounded-pill">{getCommentsCount(storiesById, currentStoryId)}</span></p>
-                <p> </p>
                 <div className="d-flex w-100 justify-content-between">
                   <a href={storiesById[currentStoryId].url} className="btn btn-light">Go to source</a>
                   <Button
@@ -112,7 +110,7 @@ const StoryPage = () => {
             </div>
             <Accordion>
               <div className="card-header">
-                Comments
+                <p className="card-text">Comments: <span className="badge text-dark bg-light rounded-pill">{getCommentsCount(storiesById, currentStoryId)}</span></p>
               </div>
               <>
                 {
