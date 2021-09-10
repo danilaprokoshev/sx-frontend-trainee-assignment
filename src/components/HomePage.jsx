@@ -41,11 +41,11 @@ const HomePage = () => {
 
   useEffect(() => {
     memoizedFetchContent();
-    const id = setInterval(fetchContent, DELAY);
+    const id = setInterval(memoizedFetchContent, DELAY);
     return () => {
       clearInterval(id);
     };
-  }, []);
+  }, [memoizedFetchContent]);
 
   useEffect(() => {
     const commentsIds = storiesAllIds

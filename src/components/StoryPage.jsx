@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Accordion, Button, Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
 import _ from 'lodash';
 import { fetchCommentsByIds } from "../slices/commentsInfo/commentsInfoSlice";
 
@@ -70,6 +70,10 @@ const StoryPage = () => {
       </Accordion.Body>
     </Accordion.Item>
   );
+
+  if (!currentStoryId) {
+    return <Redirect to="/"/>;
+  }
 
   return (
     <main className="flex-grow-1">
