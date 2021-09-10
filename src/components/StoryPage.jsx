@@ -111,6 +111,9 @@ const StoryPage = () => {
               </div>
             </div>
             <Accordion>
+              <div className="card-header">
+                Comments
+              </div>
               <>
                 {
                   _.isEqual(commentsById, {})
