@@ -1,15 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import routes from '../../routes.js';
-
-const normalizeData = (data) => data
-  .reduce((acc, item) => {
-    acc.byId[item.id] = item;
-    const date = new Date(item.time * 1000);
-    acc.byId[item.id].time = date.toLocaleDateString("en-UK");
-    acc.allIds.push(item.id);
-    return acc;
-  }, { byId: {}, allIds:[] });
+import normalizeData from '../../utils/normalizer.js';
 
 export const fetchCommentsByIds = createAsyncThunk(
   'comments/fetchByIds',
@@ -35,20 +27,21 @@ export const fetchCommentsByIds = createAsyncThunk(
 export const commentsInfoSlice = createSlice({
   name: 'commentsInfo',
   initialState: {
+    loading: 'idle',
     byId: {},
     allIds: [],
   },
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(fetchCommentsByIds.pending, (state, action) => {
+      state.loading = 'pending';
+    });
     builder.addCase(fetchCommentsByIds.fulfilled, (state, { payload }) => {
       state.byId = payload.byId;
       state.allIds = payload.allIds;
+      state.loading = 'idle';
     });
   },
 });
-
-// export const {
-// } = commentsInfoSlice.actions;
 
 export default commentsInfoSlice.reducer;

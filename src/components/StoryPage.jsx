@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Accordion, Button } from "react-bootstrap";
+import { Accordion, Button, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { fetchCommentsByIds } from "../slices/commentsInfo/commentsInfoSlice";
@@ -13,6 +13,7 @@ const StoryPage = () => {
   const StoriesAllIds = useSelector((state) => state.storiesInfo.allIds);
   const storiesById = useSelector((state) => state.storiesInfo.byId);
   const commentsById = useSelector((state) => state.commentsInfo.byId);
+  const loading = useSelector((state) => state.commentsInfo.loading);
 
   const fetchComments = () => {
     const commentsIds = StoriesAllIds
@@ -29,16 +30,7 @@ const StoryPage = () => {
     };
   }, [StoriesAllIds]);
 
-  const getCommentsCount = (byId, id) => {
-    if (!byId[id].hasOwnProperty('descendants') || byId[currentStoryId].descendants === 0) {
-      return 0;
-    }
-    const commentsCount = byId[id].descendants;
-    const kids = byId[id].kids;
-    const descendantCounts = kids.map((commentId) => getCommentsCount(commentsById, commentId));
-
-    return commentsCount + _.sum(descendantCounts);
-  };
+  const getCommentsCount = (byId, id) => byId[id].descendants;
 
   const renderSubComments = (id) => {
     if (!commentsById[id].hasOwnProperty('kids')) {
@@ -104,6 +96,7 @@ const StoryPage = () => {
                   <Button
                     variant="outline-light"
                     onClick={fetchComments}
+                    disabled={loading === 'pending'}
                   >Update comments</Button>
                 </div>
               </div>
@@ -111,12 +104,22 @@ const StoryPage = () => {
             <Accordion>
               <>
                 {
-                  getCommentsCount(storiesById, currentStoryId) > 0
-                    ? storiesById[currentStoryId].kids.map((id) => renderComments(id))
-                    : (
-                      <Accordion.Item eventKey="0">
-                        <Accordion.Header>No comments yet.</Accordion.Header>
-                      </Accordion.Item>)
+                  _.isEqual(commentsById, {})
+                    ? (
+                      <div className="h-100 d-flex justify-content-center align-items-center">
+                        <Spinner animation="border" role="status"/>
+                      </div>
+                    )
+                    :
+                    (
+                      getCommentsCount(storiesById, currentStoryId) > 0
+                        ? storiesById[currentStoryId].kids.map((id) => renderComments(id))
+                        : (
+                          <Accordion.Item eventKey="0" key="0">
+                            <Accordion.Header>No comments yet.</Accordion.Header>
+                          </Accordion.Item>
+                        )
+                    )
                 }
               </>
             </Accordion>

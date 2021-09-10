@@ -1,17 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import routes from "../../routes";
-
-// TODO: abstract func and in separate module (lib/utils)
-
-const normalizeData = (data) => data
-  .reduce((acc, item) => {
-    acc.byId[item.id] = item;
-    const date = new Date(item.time * 1000);
-    acc.byId[item.id].time = date.toLocaleDateString("en-UK");
-    acc.allIds.push(item.id);
-    return acc;
-  }, { byId: {}, allIds:[] });
+import routes from '../../routes';
+import normalizeData from '../../utils/normalizer.js';
 
 export const fetchStoriesById = createAsyncThunk(
   'stories/fetchByIds',
@@ -33,22 +23,24 @@ export const fetchStoriesById = createAsyncThunk(
 export const storiesInfoSlice = createSlice({
   name: 'storiesInfo',
   initialState: {
+    loading: 'idle',
     byId: {},
     allIds: [],
     currentStoryId: null,
   },
   reducers: {
-    // addStoriesIds: (state, { payload }) => {
-    //   state.allIds.splice(0, 100, ...payload);
-    // },
     setCurrentStoryId: (state, { payload }) => {
       state.currentStoryId = payload;
-    }
+    },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchStoriesById.pending, (state, action) => {
+      state.loading = 'pending';
+    });
     builder.addCase(fetchStoriesById.fulfilled, (state, { payload }) => {
       state.byId = payload.byId;
       state.allIds = payload.allIds;
+      state.loading = 'idle';
     });
   },
 });

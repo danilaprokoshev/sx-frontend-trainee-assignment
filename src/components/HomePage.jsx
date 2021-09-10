@@ -1,11 +1,12 @@
-import React, {useCallback, useEffect} from 'react';
+import React, { useCallback, useEffect } from 'react';
 import axios from 'axios';
 import routes from '../routes.js';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchStoriesById, setCurrentStoryId } from '../slices/storiesInfo/storiesInfoSlice.js';
 import { fetchCommentsByIds } from '../slices/commentsInfo/commentsInfoSlice.js';
-import { Button } from 'react-bootstrap';
+import { Button, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
 
 const STORIES_FROM = 0;
 const STORIES_TO = 100;
@@ -15,8 +16,9 @@ const getNewStoriesIds = (contents, from = STORIES_FROM, to = STORIES_TO) => (JS
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const StoriesAllIds = useSelector((state) => state.storiesInfo.allIds);
-  const StoriesById = useSelector((state) => state.storiesInfo.byId);
+  const storiesAllIds = useSelector((state) => state.storiesInfo.allIds);
+  const storiesById = useSelector((state) => state.storiesInfo.byId);
+  const loading = useSelector((state) => state.storiesInfo.loading);
 
   const fetchContent = async () => {
     try {
@@ -46,11 +48,13 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    const commentsIds = StoriesAllIds
-      .filter((id) => StoriesById[id].descendants > 0)
-      .flatMap((id) => StoriesById[id].kids);
+    const commentsIds = storiesAllIds
+      .filter((id) => storiesById[id].descendants > 0)
+      .flatMap((id) => storiesById[id].kids);
     dispatch(fetchCommentsByIds(commentsIds));
-  }, [StoriesById]);
+
+    return () => {};
+  }, [storiesById]);
 
   const handleSelectStory = (id) => () => {
     dispatch(setCurrentStoryId(id));
@@ -65,11 +69,11 @@ const HomePage = () => {
       onClick={handleSelectStory(id)}
     >
       <div className="d-flex w-100 justify-content-between">
-        <h5 className="mb-1">{StoriesById[id].title}</h5>
-        <small>{StoriesById[id].time}</small>
+        <h5 className="mb-1">{storiesById[id].title}</h5>
+        <small>{storiesById[id].time}</small>
       </div>
-      <p className="mb-1">Score: {StoriesById[id].score}</p>
-      <small>Author: {StoriesById[id].by}</small>
+      <p className="mb-1">Score: {storiesById[id].score}</p>
+      <small>Author: {storiesById[id].by}</small>
     </Link>
   );
 
@@ -85,12 +89,25 @@ const HomePage = () => {
                   <Button
                     variant="outline-light"
                     onClick={handleUpdateStories}
+                    disabled={loading === 'pending'}
                   >Update stories</Button>
                 </div>
               </div>
-              <div className="list-group">
-                {StoriesAllIds.length > 0 && StoriesAllIds.map((id) => renderStoryInfo(id))}
-              </div>
+              {
+                 _.isEqual(storiesById, {})
+                  ? (
+                    <div className="list-group-item list-group-item-action">
+                      <div className="h-100 d-flex justify-content-center align-items-center">
+                        <Spinner animation="border" role="status" />
+                      </div>
+                    </div>
+                  )
+                  : (
+                    <div className="list-group">
+                      {storiesAllIds.length > 0 && storiesAllIds.map((id) => renderStoryInfo(id))}
+                    </div>
+                  )
+              }
             </div>
           </div>
         </div>
